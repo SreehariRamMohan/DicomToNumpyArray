@@ -1,8 +1,9 @@
 import dicom
 import os
 import numpy
+import numpy as np
 
-PathDicom = "/path/to/dicom/files"
+PathDicom = "/Path/To/Dicom/Files"
 lstFilesDCM = []  # create an empty list
 count = 0
 for dirName, subdirList, fileList in os.walk(PathDicom):
@@ -24,18 +25,23 @@ ConstPixelSpacing = (float(RefDs.PixelSpacing[0]), float(RefDs.PixelSpacing[1]),
 # The array is sized based on 'ConstPixelDims'
 ArrayDicom = numpy.zeros(ConstPixelDims, dtype=RefDs.pixel_array.dtype)
 
+
+length = 0
 # loop through all the DICOM files
 for filenameDCM in lstFilesDCM:
     # read the file
     ds = dicom.read_file(filenameDCM)
     # store the raw image data
     ArrayDicom[:, :, lstFilesDCM.index(filenameDCM)] = ds.pixel_array
+    strippedName = filenameDCM[:-4]
+    strippedName += ".npy"
+    np.save(strippedName, ArrayDicom[:, :, lstFilesDCM.index(filenameDCM)])
+    print(strippedName)
+    length += 1
+    
 
-for arr in ArrayDicom:
-    print(arr)
-    print("Printing NumpyArray")
+print("Done Saving files they are located in " + str(PathDicom))
 
-print("Done")
 
 
 
